@@ -34,11 +34,18 @@ public class UserEndpoints {
     json = Encryption.encryptDecryptXOR(json);
 
     // Return the user with the status code 200
-    // TODO: What should happen if something breaks down?
-    return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    // TODO: What should happen if something breaks down? - FIX
+    if (user!= null) {
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    }
+    else {
+      return Response.status(400).entity("Could not create user").build();
+    }
   }
 
-  /** @return Responses */
+  /**
+   * @return Responses
+   */
   @GET
   @Path("/")
   public Response getUsers() {
@@ -92,11 +99,23 @@ public class UserEndpoints {
   }
 
   // TODO: Make the system able to delete users
-  public Response deleteUser(String x) {
+  @POST
+  @Path("delete/{delete}")
+  public Response deleteUser(@PathParam("delete") int deleteUserById) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    UserController.deleteUser(deleteUserById);
+
+    // return the data to the user
+
+    if (deleteUserById != 0) {
+
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).entity(" Brugeren med følgende id " + deleteUserById + " er hermed slettet").build();
+    } else {
+      return Response.status(400).entity("Endpoint not implemented yet").build();
+    }
   }
+
 
   // TODO: Make the system able to update users
   public Response updateUser(String x) {

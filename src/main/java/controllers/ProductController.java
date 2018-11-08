@@ -3,6 +3,8 @@ package controllers;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import cache.ProductCache;
 import model.Product;
 import utils.Log;
 
@@ -85,6 +87,8 @@ public class ProductController {
 
     return product;
   }
+
+  public static ProductCache productCache = new ProductCache();
 
   /**
    * Get all products in database
