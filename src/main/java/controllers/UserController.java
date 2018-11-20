@@ -1,11 +1,14 @@
 package controllers;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import com.oracle.javafx.jmx.json.JSONDocument;
+import com.sun.org.apache.xml.internal.security.algorithms.JCEMapper;
 import model.User;
 import utils.Hashing;
 import utils.Log;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class UserController {
 
@@ -15,7 +18,7 @@ public class UserController {
     dbCon = new DatabaseController();
   }
 
-  public static User getUser(int id) {
+  public static User getUser(int token) {
 
     // Check for connection
     if (dbCon == null) {
@@ -23,7 +26,7 @@ public class UserController {
     }
 
     // Build the query for DB
-    String sql = "SELECT * FROM user where id=" + id;
+    String sql = "SELECT * FROM user where id=" + token;
 
     // Actually do the query
     ResultSet rs = dbCon.query(sql);
@@ -33,12 +36,12 @@ public class UserController {
       // Get first object, since we only have one
       if (rs.next()) {
         user =
-            new User(
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
 
         // return the create object
         return user;
@@ -76,12 +79,12 @@ public class UserController {
       // Loop through DB Data
       while (rs.next()) {
         User user =
-            new User(
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
 
         // Add element to list
         users.add(user);
@@ -110,22 +113,22 @@ public class UserController {
     // Insert the user in the DB
     // TODO: Hash the user password before saving it. - FIX
     int userID = dbCon.insert(
-        "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
-            + user.getFirstname()
-            + "', '"
-            + user.getLastname()
-            + "', '"
-            + Hashing.md5(user.getPassword())
-            + "', '"
-            + user.getEmail()
-            + "', "
-            + user.getCreatedTime()
-            + ")");
+            "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
+                    + user.getFirstname()
+                    + "', '"
+                    + user.getLastname()
+                    + "', '"
+                    + Hashing.md5(user.getPassword())
+                    + "', '"
+                    + user.getEmail()
+                    + "', "
+                    + user.getCreatedTime()
+                    + ")");
 
     if (userID != 0) {
       //Update the userid of the user before returning
       user.setId(userID);
-    } else{
+    } else {
       // Return null if user has not been inserted into database
       return null;
     }
@@ -134,15 +137,54 @@ public class UserController {
     return user;
   }
 
-  public  static void deleteUser(int id) {
-
-    //check the database connection
-
-    if (dbCon == null){
-      dbCon = new DatabaseController();
-    }
-    String sql = " delete FROM user Where id = " + id;
-
-    dbCon.deleteUser(sql);
+  public static String loginUser(User user) {
+    return null;
   }
+
+
+  private static class DecodedJWT {
+    public JSONDocument.Type getClaim(String userid) {
+      return null;
+    }
+  }
+
+  private static class JWTVerifier {
+    public DecodedJWT verify(String token) {
+      return null;
+    }
+  }
+
+  private static class JWT {
+    public static Object require(JCEMapper.Algorithm algorithm) {
+      return null;
+    }
+
+    public static Object create() {
+      return null;
+    }
+  }
+
+  private static class JWTVerificationException extends Throwable {
+
+  }
+
+  private static class JWTCreationException extends Throwable {
+  }
+
+  public static boolean updateUser(String id) {
+
+    // Check for DB Connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+
+    }
+
+    String sql = "SELECT FROM user WHERE id =" + id;
+
+    dbCon.updateUser(sql);
+
+
+    return false;
+  }
+
 }
