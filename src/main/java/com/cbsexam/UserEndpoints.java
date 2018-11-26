@@ -1,5 +1,6 @@
 package com.cbsexam;
 
+import cache.UserCache;
 import com.google.gson.Gson;
 import controllers.UserController;
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ public class UserEndpoints {
       return Response.status(400).entity("Could not create user").build();
     }
   }
+
+  private static UserCache userCache = new UserCache();
 
   /**
    * @return Responses
@@ -87,7 +90,7 @@ public class UserEndpoints {
     }
   }
 
-  // TODO: Make the system able to login users and assign them a token to use throughout the system.
+  // TODO: Make the system able to login users and assign them a token to use throughout the system - FIX
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -134,19 +137,24 @@ public class UserEndpoints {
   */
 
 
-  // TODO: Make the system able to update users
+  // TODO: Make the system able to update users.
   @POST
-  @Path("/update")
+  @Path("/updateUser")
+  @Consumes(MediaType.APPLICATION_JSON)
 
-  public Response updateUser(String token) {
+  public Response updateUser(String body) {
 
-    if (UserController.updateUser(token)) {
+    User user = new Gson().fromJson(body, User.class);
 
-      return Response.status(200).entity("Brugeren med id " + idToUpdate + " oplysningerne er hermed opdateret").build();
+    if (UserController.updateUser(user, user.getToken())){
+
+      userCache.getUsers(true);
+
+      return Response.status(200).entity("Brugeren er blevet opdateret i systemet").build();
 
     } else {
 
-      return Response.status(400).entity("Oplysningerne kunne ikke opdateres").build();
+      return Response.status(400).entity("Burgeren blev ikke fundet i systemet og er derfor ikke blevet opdateret").build();
     }
 
   }

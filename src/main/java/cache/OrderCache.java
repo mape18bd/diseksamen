@@ -8,7 +8,7 @@ import utils.Config;
 
 import java.util.ArrayList;
 
-//TODO: Build this cache and use it.
+//TODO: Build this cache and use it - FIX
 public class OrderCache {
 
     // List of products
@@ -30,6 +30,9 @@ public class OrderCache {
         // Otherwise we look at the age of the cache and figure out if we should update.
         // If the list is empty we also check for new products
         if (forceUpdate
+
+                /* i nedenstående linje bliver det gjort at created time skal være minde end current time for at den kan opdatere.
+                 */
                 || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
                 || this.orders.isEmpty()) {
 

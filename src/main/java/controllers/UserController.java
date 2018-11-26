@@ -171,7 +171,7 @@ public class UserController {
   private static class JWTCreationException extends Throwable {
   }
 
-  public static boolean updateUser(String id) {
+  public static boolean updateUser(User user, String id) {
 
     // Check for DB Connection
     if (dbCon == null) {

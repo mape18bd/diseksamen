@@ -36,7 +36,7 @@ public class ProductCache {
       this.products = products;
       this.created = System.currentTimeMillis() / 1000L;
 
-      // tester om cachen virker
+      // tester om cachen virker, hvis cachen ikke bliver brugt vil nedenstående blive udskrevet mere end en gang.
 
       System.out.println("This Cache is never used");
     }

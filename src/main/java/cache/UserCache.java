@@ -8,7 +8,7 @@ import utils.Config;
 
 import java.util.ArrayList;
 
-//TODO: Build this cache and use it.
+//TODO: Build this cache and use it - FIX
 public class UserCache {
 
     // List of products
@@ -39,6 +39,11 @@ public class UserCache {
             // Set products for the instance and set created timestamp
             this.users = users;
             this.created = System.currentTimeMillis() / 1000L;
+
+
+            // tester om cachen virker, hvis cachen ikke bliver brugt vil nedenstående blive udskrevet mere end en gang.
+            System.out.println("This Cache is never used");
+
         }
 
         // Return the documents
