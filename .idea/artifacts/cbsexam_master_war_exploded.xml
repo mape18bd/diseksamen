@@ -44,8 +44,11 @@
           <element id="library" level="project" name="Maven: org.glassfish.jersey.core:jersey-common:2.23" />
           <element id="library" level="project" name="Maven: org.glassfish.jersey.core:jersey-server:2.23" />
           <element id="library" level="project" name="Maven: org.javassist:javassist:3.18.1-GA" />
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.46" />
         </element>
       </element>
+      <element id="javaee-facet-resources" facet="cbsexam-master/web/Web2" />
+      <element id="javaee-facet-resources" facet="cbsexam-master/web/Web3" />
     </root>
   </artifact>
 </component>

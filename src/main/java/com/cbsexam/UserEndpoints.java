@@ -113,7 +113,7 @@ public class UserEndpoints {
   }
 
 /*
-  // TODO: Make the system able to delete users - FIX
+  // TODO: Make the system able to delete users.
 
   @DELETE
   @Path("/delete")
@@ -134,7 +134,7 @@ public class UserEndpoints {
     }
 
   }
-  */
+*/
 
 
   // TODO: Make the system able to update users.

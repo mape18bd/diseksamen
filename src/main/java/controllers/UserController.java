@@ -1,7 +1,16 @@
 package controllers;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import com.sun.org.apache.xml.internal.security.algorithms.Algorithm;
 import com.sun.org.apache.xml.internal.security.algorithms.JCEMapper;
+/*
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+*/
 import model.User;
 import utils.Hashing;
 import utils.Log;
@@ -136,6 +145,32 @@ public class UserController {
     // Return user
     return user;
   }
+
+  /*
+  public static boolean deleteUser(String token) {
+
+    //Tjekker for forbindelse til databasen
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+    DecodedJWT jwt = null;
+    try {
+      JCEMapper.Algorithm algorithm = Algorithm.HMAC256("secret");
+      JWTVerifier verifier = JWT.require(algorithm)
+              .withIssuer("auth0")
+              .build();
+      jwt = verifier.verify(token);
+    } catch (JWTVerificationException exception) {
+
+    }
+
+      String sql = "DELETE FROM user WHERE id = " + jwt.getClaim( "userid").asInt();
+
+    return dbCon.insert(sql) == 1;
+
+  }
+  */
+
 
   public static String loginUser(User user) {
     return null;
