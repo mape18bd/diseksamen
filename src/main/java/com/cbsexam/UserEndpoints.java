@@ -106,24 +106,24 @@ public class UserEndpoints {
     /// Return the data to the user
     if (token != "") {
       // Return a response with status 200 and JSON as type
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(token).build();
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("This is your token: " + token).build();
     } else {
-      return Response.status(400).entity("Could not create user").build();
+      return Response.status(400).entity("Could not login").build();
     }
   }
 
-/*
+
   // TODO: Make the system able to delete users.
 
   @DELETE
-  @Path("/delete")
-  public Response deleteUser(String body) {
+  @Path("/{token}")
+  @Consumes (MediaType.APPLICATION_JSON)
+  public Response deleteUser(@PathParam("token") String token) {
 
-    User user = new Gson().fromJson(body, User.class);
+    Boolean deleted = UserController.deleteUser(token);
 
     // Return the data to the user
-    if (UserController.deleteUser(user.getToken())) {
-
+    if (deleted) {
       // Return a response with status 200 and JSON as type
       return Response.status(200).entity("Bruger er slettet fra systemet").build();
 
@@ -134,23 +134,21 @@ public class UserEndpoints {
     }
 
   }
-*/
 
 
   // TODO: Make the system able to update users.
-  @POST
-  @Path("/updateUser")
+  @PUT
+  @Path("/{idUser}/{token}")
   @Consumes(MediaType.APPLICATION_JSON)
 
-  public Response updateUser(String body) {
+  public Response updateUser(@PathParam("token") String token, String body) {
 
     User user = new Gson().fromJson(body, User.class);
 
-    if (UserController.updateUser(user, user.getToken())){
+    Boolean updated = UserController.updateUser(user,token);
 
-      userCache.getUsers(true);
-
-      return Response.status(200).entity("Brugeren er blevet opdateret i systemet").build();
+    if (updated) {
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Brugeren er blevet opdateret i systemet").build();
 
     } else {
 

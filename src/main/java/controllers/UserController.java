@@ -1,23 +1,20 @@
 package controllers;
 
-import com.oracle.javafx.jmx.json.JSONDocument;
-import com.sun.org.apache.xml.internal.security.algorithms.Algorithm;
-import com.sun.org.apache.xml.internal.security.algorithms.JCEMapper;
-/*
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-*/
 import model.User;
 import utils.Hashing;
 import utils.Log;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+
 
 public class UserController {
 
@@ -127,7 +124,7 @@ public class UserController {
                     + "', '"
                     + user.getLastname()
                     + "', '"
-                    + Hashing.md5(user.getPassword())
+                    + Hashing.SaltHashings(user.getPassword())
                     + "', '"
                     + user.getEmail()
                     + "', "
@@ -146,78 +143,127 @@ public class UserController {
     return user;
   }
 
-  /*
-  public static boolean deleteUser(String token) {
+
+  public static Boolean deleteUser(String token) {
 
     //Tjekker for forbindelse til databasen
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
-    DecodedJWT jwt = null;
-    try {
-      JCEMapper.Algorithm algorithm = Algorithm.HMAC256("secret");
-      JWTVerifier verifier = JWT.require(algorithm)
-              .withIssuer("auth0")
-              .build();
-      jwt = verifier.verify(token);
-    } catch (JWTVerificationException exception) {
 
+    try {
+      DecodedJWT jwt = JWT.decode(token);
+      int id = jwt.getClaim("userId").asInt();
+
+      try {
+        PreparedStatement deleteUser = dbCon.getConnection().prepareStatement("DELETE FROM user WHERE id = ? ");
+
+        deleteUser.setInt(1, id);
+
+        int rowsAffected = deleteUser.executeUpdate();
+
+        if (rowsAffected == 1) {
+          return true;
+        }
+
+      } catch (SQLException sql) {
+        sql.printStackTrace();
+      }
+
+    } catch (JWTDecodeException ex) {
+      ex.printStackTrace();
     }
 
-      String sql = "DELETE FROM user WHERE id = " + jwt.getClaim( "userid").asInt();
-
-    return dbCon.insert(sql) == 1;
+    return false;
 
   }
-  */
+
 
 
   public static String loginUser(User user) {
-    return null;
-  }
-
-
-  private static class DecodedJWT {
-    public JSONDocument.Type getClaim(String userid) {
-      return null;
-    }
-  }
-
-  private static class JWTVerifier {
-    public DecodedJWT verify(String token) {
-      return null;
-    }
-  }
-
-  private static class JWT {
-    public static Object require(JCEMapper.Algorithm algorithm) {
-      return null;
-    }
-
-    public static Object create() {
-      return null;
-    }
-  }
-
-  private static class JWTVerificationException extends Throwable {
-
-  }
-
-  private static class JWTCreationException extends Throwable {
-  }
-
-  public static boolean updateUser(User user, String id) {
 
     // Check for DB Connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
+  }
+  ResultSet resultSet;
+    User newUser;
+    String token = null;
 
+    try{
+      PreparedStatement loginUser = dbCon.getConnection().prepareStatement("SELECT * FROM user WHERE email = ? AND password = ?");
+
+              loginUser.setString(1,user.getEmail());
+              loginUser.setString(2,Hashing.SaltHashings(user.getPassword()));
+
+              resultSet = loginUser.executeQuery();
+
+              if (resultSet.next()){newUser = new User (
+                      resultSet.getInt("id"),
+                      resultSet.getString("first_name"),
+                      resultSet.getString("last_name"),
+                      resultSet.getString("password"),
+                      resultSet.getString("email"));
+
+                if (newUser != null){
+                  try{
+                    Algorithm algorithm = Algorithm.HMAC256("secret");
+                    token = JWT.create()
+                            .withClaim("userId", newUser.getId())
+                            .withIssuer("auth0")
+                            .sign(algorithm);
+                  }catch(JWTCreationException ex){
+
+                  } finally {
+                    return token;
+                  }
+
+                }
+              } else {
+                System.out.print("No user found");
+              }
+
+    } catch (SQLException sqlEx) {
+      sqlEx.printStackTrace();
     }
 
-    String sql = "SELECT FROM user WHERE id =" + id;
+    return "";
 
-    dbCon.updateUser(sql);
+  }
 
+  public static Boolean updateUser(User user, String token) {
+
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    try{
+      DecodedJWT jwt = JWT.decode(token);
+      int id = jwt.getClaim("userId").asInt();
+
+      try{
+        PreparedStatement updateUser = dbCon.getConnection().prepareStatement("UPDATE user SET " +
+                "first_name = ?, last_name = ?, password = ?, email = ? WHERE id=? ");
+
+        updateUser.setString(1, user.getFirstname());
+        updateUser.setString(2, user.getLastname());
+        updateUser.setString(3, user.getPassword());
+        updateUser.setString(4, user.getEmail());
+        updateUser.setInt(5, id);
+
+        int rowsAffected = updateUser.executeUpdate();
+
+        if (rowsAffected == 1){
+          return true;
+        }
+
+      } catch (SQLException sql){
+        sql.printStackTrace();;
+      }
+
+    } catch (JWTDecodeException ex) {
+      ex.printStackTrace();
+    }
 
     return false;
   }

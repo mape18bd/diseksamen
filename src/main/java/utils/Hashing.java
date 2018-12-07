@@ -38,6 +38,15 @@ public final class Hashing {
     return null;
   }
 
+  public String SaltHashing(String str) {
+
+    String salt = Config.getSALT();
+
+    String saltedString = salt + str;
+
+    return md5(saltedString);
+  }
+
   // TODO: You should add a salt and make this secure - FIX
   public static String sha(String rawString) {
     try {
@@ -60,4 +69,15 @@ public final class Hashing {
 
     return rawString;
   }
+
+  public static String SaltHashings(String str) {
+
+    String salt = Config.getSALT();
+
+    String saltedString = salt + str;
+
+    return sha(saltedString);
+
+  }
+
 }
